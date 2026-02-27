@@ -119,7 +119,7 @@ hf-practices/
 
 ## Contributing
 
-This project is no longer actively maintained. You may submit small bug fixes or documentation improvements via Pull Request, but reviews may be infrequent and contributions are not guaranteed to be merged.
+This project is no longer actively maintained. See [CONTRIBUTING.md](CONTRIBUTING.md) for historical build information.
 
 ## License
 
