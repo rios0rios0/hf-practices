@@ -96,6 +96,7 @@ hf-practices/
 │       └── CapturedPhotoViewController.{h,m}     # Camera photo capture
 ├── .github/
 │   └── copilot-instructions.md           # This file
+├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
