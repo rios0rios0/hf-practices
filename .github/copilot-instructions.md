@@ -95,7 +95,9 @@ hf-practices/
 │       ├── CapturedListViewController.{h,m}      # Captured fugitives list
 │       └── CapturedPhotoViewController.{h,m}     # Camera photo capture
 ├── .github/
-│   └── copilot-instructions.md           # This file
+│   ├── copilot-instructions.md           # This file
+│   └── workflows/
+│       └── release.yaml                  # Tag creation on merge to main
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE
@@ -173,7 +175,7 @@ hf-practices/
 
 ## CI/CD Pipeline
 
-There is **no CI/CD automation** in this repository. All validation is manual in Xcode on macOS.
+- **Release workflow** (`.github/workflows/release.yaml`): on push to `main`, delegates to the shared `rios0rios0/pipelines` release workflow to create Git tags. No build or test jobs — all Xcode validation remains manual on macOS.
 
 ## Development Workflow
 
