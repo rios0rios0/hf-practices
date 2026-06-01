@@ -78,7 +78,7 @@ hf-practices/
 │       ├── MasterViewController.{h,m}    # Table view with drink list
 │       ├── DetailViewController.{h,m}    # Drink detail display
 │       ├── AddViewController.{h,m}       # Add/edit drink form
-│       ├── DrinkConstats.h               # Key constants (NAME_KEY, DIRECTION_KEY)
+│       ├── DrinkConstats.h               # Key constants (NAME_KEY, INGREDIENTS_KEY, DIRECTIONS_KEY)
 │       └── DrinkDirections.plist         # Drink recipe data (plist persistence)
 ├── InstaTwit/
 │   ├── InstaTwit.xcodeproj/
@@ -165,7 +165,7 @@ hf-practices/
 - Use `IBOutlet` for view references and `IBAction` for event handlers wired in Interface Builder
 - Plist persistence: load with `[NSArray arrayWithContentsOfFile:]`; save with `[array writeToFile:atomically:YES]`
 - Core Data: obtain `NSManagedObjectContext` from `AppDelegate`; create entities with `[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]`
-- Constants declared in header files as `NSString * const` (e.g., `DrinkConstats.h`)
+- Constants declared in header files as `#define` macros (e.g., `DrinkConstats.h` defines `NAME_KEY`, `INGREDIENTS_KEY`, `DIRECTIONS_KEY`)
 
 ### File Organization
 
@@ -209,7 +209,7 @@ open "iBountyHunter/iBountyHunter.xcodeproj"
 ### Modifying Plist Data (DrinkMixer)
 
 1. Open `DrinkDirections.plist` in Xcode's property list editor or a text editor
-2. Each entry is a dictionary with keys `name` and `direction` (defined in `DrinkConstats.h`)
+2. Each entry is a dictionary with keys `name`, `ingredients`, and `directions` (defined in `DrinkConstats.h`)
 3. Build and run to verify data loads correctly in `MasterViewController`
 
 ### Working with Core Data (iBountyHunter)

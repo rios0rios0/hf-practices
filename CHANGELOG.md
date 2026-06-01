@@ -16,6 +16,14 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ## [Unreleased]
 
+### Added
+
+- created `CLAUDE.md` to give Claude Code sessions repo-specific guidance (no build system, manual reference counting, per-sub-project architecture)
+
+### Changed
+
+- corrected `.github/copilot-instructions.md` DrinkMixer constants: keys are `NAME_KEY`, `INGREDIENTS_KEY`, `DIRECTIONS_KEY` (`name`/`ingredients`/`directions`) declared as `#define` macros, not `NSString * const`
+
 ## [0.1.2] - 2026-05-19
 
 ### Changed
