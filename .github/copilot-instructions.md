@@ -122,7 +122,7 @@ hf-practices/
 ### Common Patterns Across Sub-Projects
 
 - **MVC** (Model-View-Controller): each sub-project separates view files (XIBs), controller classes (`.h`/`.m`), and data (plist or Core Data)
-- **XIB-based UI**: every `UIViewController` has a corresponding `.xib` file managed by Interface Builder; no programmatic layout
+- **XIB-based UI**: Interface Builder `.xib` files, no programmatic layout and no storyboards. Most controllers have a matching XIB, but not all — e.g. `DrinkMixer/AddViewController`, `iBountyHunter/FugitiveListViewController`, and `iBountyHunter/CapturedListViewController` have none (their UI lives in a parent XIB or is built in code)
 - **Manual memory management**: `retain`/`release`/`autorelease` calls throughout; no `@autoreleasepool` blocks or ARC syntax
 - **AppDelegate as entry point**: `application:didFinishLaunchingWithOptions:` sets up the root view controller in every sub-project
 
