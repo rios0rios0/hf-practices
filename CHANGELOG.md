@@ -16,6 +16,8 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-09
+
 ### Changed
 
 - corrected `.github/copilot-instructions.md` XIB claim: not every `UIViewController` has a `.xib` (e.g. `DrinkMixer/AddViewController`, `iBountyHunter/FugitiveListViewController`, `iBountyHunter/CapturedListViewController` have none)
