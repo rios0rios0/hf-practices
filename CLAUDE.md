@@ -12,7 +12,7 @@ There is **no build system, package manager, linter, or test suite** — do not 
 
 - Build/run: open a sub-project's `.xcodeproj` in Xcode (e.g. `open "DrinkMixer/DrinkMixer.xcodeproj"`), pick an iOS Simulator target, `Cmd+B` / `Cmd+R`.
 - Validation is **manual only**: build, run on the Simulator, exercise the UI. There is nothing to run from the command line.
-- The only automation is `.github/workflows/release.yaml`, which delegates to `rios0rios0/pipelines` to cut a Git tag on push to `main`. It runs no build or test.
+- GitHub automation never builds or tests the code — every workflow delegates to `rios0rios0/pipelines`: `release.yaml` cuts a Git tag on push to `main`; `claude-review.yaml` runs an automated Claude code review on pull requests; `claude-mention.yaml` responds to `@claude` mentions in issues and pull requests.
 
 ## Conventions that differ from modern Objective-C
 
