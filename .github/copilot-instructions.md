@@ -96,8 +96,11 @@ hf-practices/
 │       └── CapturedPhotoViewController.{h,m}     # Camera photo capture
 ├── .github/
 │   ├── copilot-instructions.md           # This file
+│   ├── skills/code-review/SKILL.md       # Copilot code-review skill
 │   └── workflows/
-│       └── release.yaml                  # Tag creation on merge to main
+│       ├── release.yaml                  # Tag creation on push to main
+│       ├── claude-review.yaml            # Automated Claude PR review
+│       └── claude-mention.yaml           # @claude mention responder
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE
@@ -175,7 +178,11 @@ hf-practices/
 
 ## CI/CD Pipeline
 
-- **Release workflow** (`.github/workflows/release.yaml`): on push to `main`, delegates to the shared `rios0rios0/pipelines` release workflow to create Git tags. No build or test jobs — all Xcode validation remains manual on macOS.
+Every workflow delegates to a shared `rios0rios0/pipelines` reusable workflow and none build or test the code — all Xcode validation remains manual on macOS.
+
+- **`release.yaml`**: on push to `main`, creates a Git tag.
+- **`claude-review.yaml`**: on pull-request events, runs an automated Claude code review.
+- **`claude-mention.yaml`**: on issue/PR comments, reviews, and new/assigned issues, responds to `@claude` mentions.
 
 ## Development Workflow
 
