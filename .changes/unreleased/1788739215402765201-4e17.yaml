@@ -1,3 +1,0 @@
-kind: 'Changed'
-body: 'reworded the `.github/skills/code-review/SKILL.md` secret-hygiene bullet to drop credential-shaped prefixes that trip the `sast:gitleaks` scan'
-time: '2026-09-07T07:52:11.402765201Z'
