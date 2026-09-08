@@ -22,6 +22,19 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-09-08
+
+### Changed
+
+- changed both `chlog new` examples in the AI-assistant instruction block of `CLAUDE.md` and `.github/copilot-instructions.md` to `--body '<past-tense description>'`: changelog bodies here are written in simple past tense, and the body is single-quoted because it carries backticks that a double-quoted shell argument would command-substitute, and added the line telling the reader to write an apostrophe inside the single-quoted body as `'\''`, since bodies here carry possessives, and switched the one other hand-written `chlog new` example in `.github/skills/code-review/SKILL.md` to the same single-quoted body argument
+- re-wrapped the secret-hygiene bullet of the `code-review` skill to the fleet-standard five-line form the weekly refresh prescribes, without changing a word of it
+- refreshed `CLAUDE.md` and `.github/copilot-instructions.md` to document the new `checks.yaml` rebase and changelog gate workflow
+- reworded the secret-hygiene bullet in the `code-review` skill to name the vendor behind each credential prefix and to drop the hyphen from the Slack example, the one shape Gitleaks can match on its own
+
+### Fixed
+
+- regenerated 1 hand-written changelog fragment with `chlog new`, keeping its kind and body, so the filename prefix and the `time` field come from chlog's own clock like every other fragment's
+
 ## [0.5.0] - 2026-09-02
 
 ### Added

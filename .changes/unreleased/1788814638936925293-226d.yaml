@@ -1,3 +1,0 @@
-kind: 'Changed'
-body: 'reworded the secret-hygiene bullet in the `code-review` skill to name the vendor behind each credential prefix and to drop the hyphen from the Slack example, the one shape Gitleaks can match on its own'
-time: '2026-09-07T20:57:18.936839512Z'
