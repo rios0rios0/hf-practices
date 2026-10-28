@@ -20,7 +20,7 @@ The canonical engineering standards live in the
 repo-tailored index into that guide plus the rules that only apply here. Precedence, highest
 first:
 
-1. This repository's `.github/copilot-instructions.md`, `CLAUDE.md`, and `CONTRIBUTING.md` —
+1. This repository's `AGENTS.md`, `.github/copilot-instructions.md`, and `CONTRIBUTING.md` —
    they describe *this* codebase and its load-bearing invariants.
 2. The **rios0rios0/guide** wiki — the shared standard.
 3. General language idiom.
@@ -45,9 +45,9 @@ guide disagree, the guide wins and this file should be corrected in the same pul
    `git symbolic-ref refs/remotes/origin/HEAD` (strip `refs/remotes/origin/`; fall back to `main`),
    then read the diff with `git diff <default>...HEAD` and the file list with
    `git diff <default>...HEAD --name-only`.
-2. **Read whole files, not just hunks.** A hunk cannot show a layering violation, a missing
-   test, or a duplicated helper. Open every changed file in full, plus the files it imports
-   from the layer below.
+2. **Read whole files, not just hunks.** A hunk cannot show an unbalanced `retain`, a property
+   `dealloc` never releases, or an outlet that no longer matches its XIB. Open every changed
+   file in full, plus its header and any XIB it loads.
 3. **Check the change set as a unit** — not only the code. A change that alters behaviour,
    configuration, or architecture is incomplete without its changelog entry and its
    documentation update, and that omission is a finding in its own right.
@@ -63,9 +63,9 @@ These are the checks that catch real defects in this repository. Work through
 them before the generic ones.
 
 - **Manual reference counting, everywhere.** Every `retain` is balanced by a `release` in `dealloc`, `[super dealloc]` comes last, and `@property (nonatomic, retain)` is used for objects while `(nonatomic, assign)` is used for primitives and delegates. An unbalanced retain is a leak and an over-release is a crash — both are **Critical** here because there is no ARC to catch them.
-- **No ARC, no blocks, no modern literals.** These projects predate all three; keep changes consistent with the 2011-era style, and expect `-fno-objc-arc` when building with a modern Xcode.
+- **No ARC, no blocks, no modern literals.** The original code uses none of them (the Xcode 4.2 template's `@autoreleasepool` and `strong` compile under MRC and stay); keep changes consistent with the 2011-era style, and expect `-fno-objc-arc` when building with a modern Xcode.
 - **Each sub-project is isolated.** A change must not introduce a dependency from one app to another or add a shared framework — the isolation is what makes them teachable.
-- **Persistence differs per app and must stay idiomatic to what it teaches.** Plist persistence uses `[NSArray arrayWithContentsOfFile:]` and `[array writeToFile:atomically:YES]`; Core Data obtains its `NSManagedObjectContext` from the `AppDelegate` and creates entities with `[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]`. Swapping one for the other defeats the lesson.
+- **Persistence differs per app and must stay idiomatic to what it teaches.** DrinkMixer loads its plist with `[[NSMutableArray alloc] initWithContentsOfFile:]` and saves with `[array writeToFile:atomically:YES]`; iBountyHunter obtains its `NSManagedObjectContext` from the `AppDelegate` and reads `Fugitive` objects through `NSFetchedResultsController`. Swapping one for the other defeats the lesson.
 - **`IBOutlet` and `IBAction` are wired in Interface Builder.** A XIB rename or an outlet removed from the header without updating the XIB produces a runtime crash on load that compiles cleanly — check both sides.
 - **Constants live in headers as `#define` macros** (for example `DrinkConstats.h` with `NAME_KEY`, `INGREDIENTS_KEY`, `DIRECTIONS_KEY`). A key changed in one place and not the other silently loses saved data.
 - **Treat this as an archive** — no modernisation to ARC, Swift, Storyboards, or auto-layout, and no reformatting.
@@ -99,7 +99,7 @@ hand.
 - Fragment bodies start with a lowercase verb in simple past tense, capitalise proper nouns
   (GitHub, Go, Docker), and wrap code identifiers and versions in backticks.
 - `README.md` is updated whenever usage, setup, configuration, or architecture changes;
-  `.github/copilot-instructions.md` and `CLAUDE.md` whenever the workflow, commands, or
+  `AGENTS.md` and `.github/copilot-instructions.md` whenever the workflow, commands, or
   structure changes. Documentation and code ship in one commit.
 
 ## Git Flow and pull-request hygiene
@@ -165,7 +165,7 @@ A review that raises noise gets ignored. Do not report these:
 ### Change-control checklist
 - [ ] Changelog entry present for every behavioural change
 - [ ] `README.md` updated if usage, setup, or architecture changed
-- [ ] `.github/copilot-instructions.md` and `CLAUDE.md` updated if the workflow, commands, or structure changed
+- [ ] `AGENTS.md` and `.github/copilot-instructions.md` updated if the workflow, commands, or structure changed
 - [ ] Commit messages follow `type(SCOPE): message` in simple past tense
 - [ ] Breaking changes flagged in the commit footer, the changelog, and the PR description
 
@@ -177,8 +177,8 @@ A review that raises noise gets ignored. Do not report these:
 
 | Severity       | Use for                                                                                                                            |
 |----------------|------------------------------------------------------------------------------------------------------------------------------------|
-| **Critical**   | Broken dependency direction, a leaked secret, an injection or authentication flaw, a missing changelog entry, a banned mock library, a load-bearing invariant broken, a test deleted rather than fixed. |
-| **Warning**    | Naming that departs from the guide, a missing test for a new branch of logic, an unexplained magic value, a stale README or instructions file, a `switch` that should be a map. |
+| **Critical**   | An unbalanced retain/release, a broken XIB–outlet connection, a dependency between sub-projects, a leaked secret, an injection or authentication flaw, a missing changelog entry, a load-bearing invariant broken. |
+| **Warning**    | Naming that departs from the guide, an unexplained magic value, a stale README or instructions file, a change that departs from the sub-project's original idiom. |
 | **Suggestion** | Readability, consistency with neighbouring modules, and performance ideas that no rule mandates.                                     |
 
 Rank findings most severe first, and state plainly when nothing blocks the merge — an empty

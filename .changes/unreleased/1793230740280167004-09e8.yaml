@@ -1,0 +1,3 @@
+kind: 'Changed'
+body: 'corrected `AGENTS.md`, `.github/copilot-instructions.md`, and the `code-review` skill to match the code: DrinkMixer''s `AddViewController` edits the shared array with no delegate and the plist lives in the bundle, iBountyHunter copies a seed store and uses lightweight migration, XIB names differ from some controllers, and the template `@autoreleasepool` compiles under MRC'
+time: '2026-10-28T23:39:00.28011807Z'
