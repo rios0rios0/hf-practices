@@ -33,7 +33,7 @@ A full CRUD drink recipe manager featuring:
 - **Plist-based persistence** -- drinks are loaded from and saved to `DrinkDirections.plist`
 - **Edit mode** with swipe-to-delete and an Edit button in the navigation bar
 - **`NSNotificationCenter`** observer to save data on application termination
-- **Constants file** (`DrinkConstats.h`) defining `NAME_KEY` and `DIRECTION_KEY`
+- **Constants file** (`DrinkConstats.h`) defining `NAME_KEY`, `INGREDIENTS_KEY`, and `DIRECTIONS_KEY`
 
 ### InstaTwit
 

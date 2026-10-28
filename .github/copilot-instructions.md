@@ -2,8 +2,6 @@
 
 This repository is a collection of five iOS practice applications built with Objective-C in Xcode, following the exercises from the "Head First iPhone and iPad Development" book series. Each sub-project explores different UIKit components and iOS SDK features, progressing from basic view management to Core Data persistence and Twitter integration. Development was discontinued on 2012-02-16 and the repository is preserved as a historical reference.
 
-**ALWAYS** reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
-
 ## Working Effectively
 
 ### Bootstrap and Test the Repository
@@ -40,9 +38,9 @@ There is no linter or automated checker. Manual code review is the only validati
 
 ### Manual Testing Steps
 
-- **ALWAYS** build each sub-project in Xcode before submitting changes (`Cmd+B`)
+- Build the affected sub-project in Xcode (`Cmd+B`) before submitting changes
 - Run on the iOS Simulator to confirm the UI loads and interactions work (`Cmd+R`)
-- **No automated linting, unit tests, or CI/CD exists** in this repository -- all validation is manual
+- **No automated linting or unit tests exist**, and CI never builds the code (see CI/CD Pipeline below) -- all validation is manual
 - For `DrinkMixer`: verify add/edit/delete drink operations persist across app restarts (plist file)
 - For `iBountyHunter`: verify Core Data entities load correctly and the tab bar navigation works
 
@@ -94,6 +92,7 @@ hf-practices/
 │       ├── FugitiveDetailViewController.{h,m}    # Fugitive detail view
 │       ├── CapturedListViewController.{h,m}      # Captured fugitives list
 │       └── CapturedPhotoViewController.{h,m}     # Camera photo capture
+├── .changes/unreleased/              # chlog fragments (CHANGELOG.md is generated from them)
 ├── .github/
 │   ├── copilot-instructions.md           # This file
 │   ├── skills/code-review/SKILL.md       # Copilot code-review skill
@@ -102,7 +101,9 @@ hf-practices/
 │       ├── checks.yaml                   # Shared rebase + changelog gate on PRs
 │       ├── claude-review.yaml            # Automated Claude PR review
 │       └── claude-mention.yaml           # @claude mention responder
+├── AGENTS.md                         # Shared agent instructions; keep consistent with this file
 ├── CHANGELOG.md
+├── CLAUDE.md                         # Contains only `@AGENTS.md`
 ├── CONTRIBUTING.md
 ├── LICENSE
 └── README.md
@@ -127,14 +128,14 @@ hf-practices/
 
 - **MVC** (Model-View-Controller): each sub-project separates view files (XIBs), controller classes (`.h`/`.m`), and data (plist or Core Data)
 - **XIB-based UI**: Interface Builder `.xib` files, no programmatic layout and no storyboards. Most controllers have a matching XIB, but not all — e.g. `DrinkMixer/AddViewController`, `iBountyHunter/FugitiveListViewController`, and `iBountyHunter/CapturedListViewController` have none (their UI lives in a parent XIB or is built in code)
-- **Manual memory management**: `retain`/`release`/`autorelease` calls throughout; no `@autoreleasepool` blocks or ARC syntax
+- **Manual memory management**: `retain`/`release`/`autorelease` calls throughout; the only ARC-era syntax is Xcode 4.2 template code (`@autoreleasepool` in `main.m`, `strong` on `AppDelegate` properties), which compiles under MRC and stays
 - **AppDelegate as entry point**: `application:didFinishLaunchingWithOptions:` sets up the root view controller in every sub-project
 
 ### Sub-Project Patterns
 
 - **Hello World**: `SwitchViewController` owns and swaps child `UIViewController` instances; each child has its own XIB and is created lazily on first display
 - **iDecide**: single `ViewController` with one `IBAction`; no model layer
-- **DrinkMixer**: `MasterViewController` (table view) owns an `NSMutableArray` of `NSDictionary` entries; `AddViewController` is presented modally and dismisses with a delegate callback; data persisted to a plist via `NSNotificationCenter` on app termination
+- **DrinkMixer**: `MasterViewController` (table view) owns an `NSMutableArray` of `NSDictionary` entries; `AddViewController` is presented modally, edits the shared `ArrDrinks` array directly (no delegate), and the table reloads in `viewWillAppear:`; data persisted to the bundle's plist via `NSNotificationCenter` on app termination
 - **InstaTwit**: two-component `UIPickerView` backed by `NSArray` literals; network request sent synchronously on main thread (historical anti-pattern)
 - **iBountyHunter**: Core Data stack initialized in `AppDelegate`; `NSFetchedResultsController` with named cache drives both tab view controllers; camera integration via `UIImagePickerController`
 
@@ -167,15 +168,15 @@ hf-practices/
 - Use `@property (nonatomic, retain)` for object properties; `(nonatomic, assign)` for primitives and delegates
 - Always pair `retain` with `release` in `dealloc`
 - Use `IBOutlet` for view references and `IBAction` for event handlers wired in Interface Builder
-- Plist persistence: load with `[NSArray arrayWithContentsOfFile:]`; save with `[array writeToFile:atomically:YES]`
-- Core Data: obtain `NSManagedObjectContext` from `AppDelegate`; create entities with `[NSEntityDescription insertNewObjectForEntityForName:inManagedObjectContext:]`
+- Plist persistence: load with `[[NSMutableArray alloc] initWithContentsOfFile:]`; save with `[array writeToFile:atomically:YES]`
+- Core Data: obtain `NSManagedObjectContext` from `AppDelegate`; read `Fugitive` objects through an `NSFetchedResultsController` and edit them in place — no code path inserts entities; the data comes from the bundled seed `iBountyHunter.sqlite`
 - Constants declared in header files as `#define` macros (e.g., `DrinkConstats.h` defines `NAME_KEY`, `INGREDIENTS_KEY`, `DIRECTIONS_KEY`)
 
 ### File Organization
 
 - Each sub-project is entirely self-contained in its own directory with its own `.xcodeproj`
 - Header files (`.h`) declare the public interface; implementation files (`.m`) contain all logic
-- XIB files are named after their corresponding view controller class
+- Most XIB files are named after their view controller class; exceptions: Hello World's `ViewController2`–`6` load `View2`–`View6.xib`, and DrinkMixer's `AddViewController` loads `DetailViewController.xib`
 
 ## CI/CD Pipeline
 
@@ -194,7 +195,7 @@ Every workflow delegates to a shared `rios0rios0/pipelines` reusable workflow an
 4. Make changes to `.h`, `.m`, `.xib`, or plist files
 5. Build (`Cmd+B`) and fix any compiler errors or warnings
 6. Run on the iOS Simulator (`Cmd+R`) and manually verify the expected behaviour
-7. Commit following the [commit conventions](https://github.com/rios0rios0/guide/wiki/Life-Cycle/Git-Flow)
+7. Commit following the [commit conventions](https://github.com/rios0rios0/guide/wiki/Git-Flow)
 8. Open a pull request against `main`
 
 ## Common Tasks
@@ -224,15 +225,15 @@ open "iBountyHunter/iBountyHunter.xcodeproj"
 ### Working with Core Data (iBountyHunter)
 
 1. Open the `.xcdatamodeld` file in Xcode's data model editor to inspect or modify the `Fugitive` entity
-2. If the entity schema changes, delete the app from the Simulator (to drop the existing SQLite store) before re-running
+2. The store is copied from the bundled seed on first launch and opened with lightweight migration; if a schema change is beyond lightweight migration, or the seed changes, delete the app from the Simulator before re-running
 3. Fetch requests and sort descriptors are configured in `FugitiveListViewController` and `CapturedListViewController`
 
 ## Troubleshooting
 
 - **"ARC is enabled" migration prompt**: dismiss the prompt and add `-fno-objc-arc` to Build Settings → Other C Flags for each target, or set "Objective-C Automatic Reference Counting" to `NO`
 - **XIB file not found at runtime**: confirm the XIB is listed in the target's "Copy Bundle Resources" build phase
-- **Plist not saving**: check that the file path is constructed using `NSSearchPathForDirectoriesInDomains` pointing to the Documents directory, not the bundle (which is read-only)
-- **Core Data crash on schema change**: delete the app from the Simulator to remove the stale `.sqlite` store, then re-run
+- **Drink changes lost on a device**: DrinkMixer reads and writes `DrinkDirections.plist` inside the app bundle, which is writable in the Simulator but read-only on a device -- this is the original code; leave it
+- **Core Data crash on schema change**: the change is beyond lightweight migration -- delete the app from the Simulator to remove the Documents copy of `iBountyHunter.sqlite`, then re-run
 - **Twitter POST fails (InstaTwit)**: the Twitter v1 API used by this app was retired in 2013; network requests will fail with a 410 or authentication error -- this is expected
 
 ## Prerequisites

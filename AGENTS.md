@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents (Claude Code, Codex, Cursor, GitHub Copilot) when working with code in this repository.
 
 ## What this repo is
 
@@ -12,20 +12,20 @@ There is **no build system, package manager, linter, or test suite** — do not 
 
 - Build/run: open a sub-project's `.xcodeproj` in Xcode (e.g. `open "DrinkMixer/DrinkMixer.xcodeproj"`), pick an iOS Simulator target, `Cmd+B` / `Cmd+R`.
 - Validation is **manual only**: build, run on the Simulator, exercise the UI. There is nothing to run from the command line.
-- GitHub automation never builds or tests the code — every workflow delegates to `rios0rios0/pipelines`: `release.yaml` cuts a Git tag on push to `main`; `checks.yaml` runs the shared rebase and changelog gate on pull requests; `claude-review.yaml` runs an automated Claude code review on pull requests; `claude-mention.yaml` responds to `@claude` mentions in issues and pull requests.
+- GitHub workflows (all delegating to `rios0rios0/pipelines`) never build or test the code; pull requests are gated by `checks.yaml`, which runs the shared rebase and changelog check.
 
 ## Conventions that differ from modern Objective-C
 
 - **Manual reference counting (MRC), not ARC.** Code uses explicit `retain`/`release`/`autorelease` and releases in `dealloc`. Do not introduce ARC syntax. Modern Xcode may prompt to migrate to ARC — that breaks these targets; the workaround is `-fno-objc-arc` / disabling ARC in Build Settings.
-- **XIB-based UI**, no programmatic layout and no storyboards. Not every controller has a XIB — e.g. `DrinkMixer/AddViewController` has none.
-- Object properties use `(nonatomic, retain)`; delegates/primitives use `(nonatomic, assign)`.
+- **XIB-based UI**, no programmatic layout and no storyboards. XIB names don't always match the controller: `DrinkMixer/AddViewController` has no XIB of its own and loads `DetailViewController.xib`, and Hello World's `ViewController2`–`6` load `View2`–`View6.xib`.
+- Object properties use `(nonatomic, retain)`; delegates/primitives use `(nonatomic, assign)`. The Xcode 4.2 template code — `@autoreleasepool` in every `main.m`, `strong` on the `AppDelegate` properties — compiles under MRC; leave it as is.
 - **`DrinkMixer/DrinkConstats.h`** — the filename is misspelled (the in-file comment reads `DrinkConstants.h`); keep the existing spelling, three sources `#import` it. It declares `#define` macros `NAME_KEY` (`@"name"`), `INGREDIENTS_KEY` (`@"ingredients"`), `DIRECTIONS_KEY` (`@"directions"`) — these are the dictionary/plist keys for every drink and for `DrinkDirections.plist`.
 
 ## Architecture notes worth knowing
 
-- **DrinkMixer**: master/detail over an `NSMutableArray` of `NSDictionary` drinks; `AddViewController` is modal and returns via delegate callback; data is persisted to `DrinkDirections.plist`, saved on app termination via an `NSNotificationCenter` observer.
+- **DrinkMixer**: master/detail over an `NSMutableArray` of `NSDictionary` drinks; `AddViewController` is modal, has no delegate, and edits the `ArrDrinks` array it shares with `MasterViewController`, which reloads its table in `viewWillAppear:`. Drinks are read from and written back to the bundle's `DrinkDirections.plist` on app termination via an `NSNotificationCenter` observer — that works in the Simulator but not on a device, where the bundle is read-only; expected, do not move it to Documents.
 - **InstaTwit**: posts via a **synchronous** `NSURLConnection sendSynchronousRequest:` to the retired Twitter v1 XML endpoint with credentials inlined in the URL. Network calls will fail today — expected, do not "fix."
-- **iBountyHunter**: Core Data stack lives in `AppDelegate`; `NSFetchedResultsController` (with a named cache) drives the fugitive and captured lists; `Fugitive` is an `NSManagedObject` that also conforms to `MKAnnotation` (MapKit), so it carries `coordinate`/`title`/`subtitle`. Camera capture is in `CapturedPhotoViewController`. The model has multiple `.xcdatamodel` versions under `iBountyHunter.xcdatamodeld/`; after a schema change, delete the app from the Simulator to drop the stale `.sqlite` store before re-running.
+- **iBountyHunter**: Core Data stack lives in `AppDelegate`; `NSFetchedResultsController` (with a named cache) drives the fugitive and captured lists; `Fugitive` is an `NSManagedObject` that also conforms to `MKAnnotation` (MapKit), so it carries `coordinate`/`title`/`subtitle`. Camera capture is in `CapturedPhotoViewController`. On first launch `AppDelegate` copies the bundled seed `iBountyHunter.sqlite` into Documents and opens it with lightweight migration across the model versions under `iBountyHunter.xcdatamodeld/`; delete the app from the Simulator before re-running only when a schema change is beyond lightweight migration or the bundled seed changed.
 
 <!-- chlog:start -->
 ## Changelog (chlog) — MANDATORY
