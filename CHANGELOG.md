@@ -22,6 +22,18 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-11-04
+
+### Changed
+
+- corrected `AGENTS.md`, `.github/copilot-instructions.md`, and the `code-review` skill to match the code: DrinkMixer's `AddViewController` edits the shared array with no delegate and the plist lives in the bundle, iBountyHunter copies a seed store and uses lightweight migration, XIB names differ from some controllers, and the template `@autoreleasepool` compiles under MRC
+- moved the agent instructions from `CLAUDE.md` to `AGENTS.md`, keeping a `CLAUDE.md` that imports it, and pointed the `code-review` skill at `AGENTS.md`
+- replaced the generic layering and test checks in the `code-review` skill with checks that apply to this repository, and fixed the Git Flow guide link in `.github/copilot-instructions.md`
+
+### Fixed
+
+- listed all three drink keys defined in `DrinkConstats.h` in `README.md`
+
 ## [0.5.1] - 2026-09-08
 
 ### Changed
